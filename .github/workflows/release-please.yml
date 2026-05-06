@@ -1,0 +1,65 @@
+name: release-please
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  # Create release
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: python
+          package-name: ${project_name}
+
+  # Publish to PyPI
+  publish-pypi:
+    needs: release-please
+    runs-on: ubuntu-latest
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Build and publish
+        env:
+          UV_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          source "$HOME/.cargo/env"
+          uv build
+          uv publish
+
+  # Package source and upload to release (optional)
+  # build-and-attach-assets:
+  #   needs: release-please
+  #   runs-on: ubuntu-latest
+  #   if: ${{ needs.release-please.outputs.release_created }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Zip src folder
+  #       run: zip -r src.zip src/
+  #     - name: Upload Release Asset
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         gh release upload ${{ needs.release-please.outputs.tag_name }} src.zip --clobber

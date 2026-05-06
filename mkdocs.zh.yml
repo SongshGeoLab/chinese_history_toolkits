@@ -1,0 +1,82 @@
+site_name: Python 项目模板
+site_description: 现代化的 Python 项目模板
+site_author: SongshGeo
+site_url: https://songshgeo.github.io/project_template/zh/
+docs_dir: docs/zh
+site_dir: site/zh
+
+repo_name: SongshGeo/project_template
+repo_url: https://github.com/SongshGeo/project_template
+edit_uri: edit/main/docs/zh/
+
+copyright: Copyright &copy; 2024 SongshGeo
+
+nav:
+  - 主页: index.md
+  - 快速开始: doc/quick-start.md
+  - 工具链: doc/tools.md
+  - 配置说明: doc/configuration.md
+  - 开发规范: doc/development.md
+  - 部署指南: doc/deployment.md
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - scheme: slate
+      primary: blue
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/SongshGeo/project_template
+  alternate:
+    - name: English
+      link: /project_template/
+      lang: en
+    - name: 中文
+      link: /project_template/zh/
+      lang: zh
