@@ -1,293 +1,128 @@
-# Python Project Template
+<div align="center">
 
-[English](README.md) | [中文](README.zh.md)
+# 🏛️ Chinese History Toolkits
 
-A modern Python project template with batteries included: tooling, docs, tests, CI, and packaging.
+**Map any year to its Chinese dynasty / reign-era / epoch — and back.**
 
-## Quick Start
+[English](README.md) · [中文](README.zh.md) · [Online Docs](https://songshgeo.github.io/chinese_history_toolkits/)
 
-### 1) Install uv (recommended) or poetry
+[![Python](https://img.shields.io/badge/Python-3.10%E2%80%933.13-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-purple)](https://songshgeo.github.io/chinese_history_toolkits/)
+[![Tests](https://img.shields.io/badge/tests-103%20passing-brightgreen)]()
+[![Doc coverage](https://img.shields.io/badge/docstrings-100%25-brightgreen)]()
 
-```bash
-# Install uv (recommended, faster)
-curl -LsSf https://astral.sh/uv/install.sh | sh
+</div>
 
-# Or install poetry
-pip install poetry
-```
+---
 
-### 2) Create a new project
+Built on the [Shanghai Library open data platform](https://data.library.sh.cn/dynasty/) (879 raw records), with a transparent cleaning pipeline so every change traces back to the source — and a typed, dependency-light Python API on top.
 
-```bash
-# Clone this template
-git clone https://github.com/SongshGeo/project_template.git my-project
-cd my-project
+## ✨ Features
 
-# Initialize the project (configure name/description)
-make setup
+- 🔁 **Two-way lookup** — name → `(begin, end)` years; year → list of all parallel polities.
+- 🪨 **Full timeline** — 旧石器 / 新石器 prehistoric brackets through 清.
+- 🧹 **Pre-cleaned data** — F1 truncations dropped, F2 split-spans merged, missing endYears hand-filled, ancient-name reuses disambiguated (`夏(窦建德)` ≠ `夏`).
+- 📜 **Auditable** — every cleaning decision is one row in [`dynasty_drops.md`](data/dynasties/dynasty_drops.md) with a clickable upstream URI; every modification at clean time emits one `RawDataModifiedWarning`.
+- 🌐 **Alias-friendly** — pass `aliases={"新石器": {"Neolithic", "Neo"}}` to accept foreign-language input.
+- ⚡ **Lightweight** — only `pandas` at runtime; data ships in the repo, no network needed.
 
-# Manual configuration (optional, if make setup is skipped)
-make configure-project          # auto-detects package manager
-# or run directly (requires deps installed)
-python scripts/configure_project.py
-```
-
-**What the config script does**
-- Update `[project]` and `[tool.poetry]` in `pyproject.toml`
-- Update GitHub workflow config
-- Create/update `README.md`
-- Clear `CHANGELOG.md`
-
-**The script will ask for**
-- **Project name**: used in package/config
-- **Project description**: short project summary
-
-### Optional: install dependencies only
+## 🚀 Quickstart
 
 ```bash
-uv sync --all-extras  # using uv
-# or
-poetry install        # using poetry
+git clone https://github.com/SongshGeo/chinese_history_toolkits.git
+cd chinese_history_toolkits
+uv sync --all-extras   # or: pip install pandas
 ```
 
-### 3) Develop
+```python
+from src.core.dynasties import (
+    get_age_from_cultural_period,
+    get_cultural_periods_from_year,
+)
+
+# Name → years
+get_age_from_cultural_period("康熙")                              # → (1662.0, 1722.0)
+get_age_from_cultural_period("唐", level="dynasty")               # → (618.0, 907.0)
+get_age_from_cultural_period("新石器", level="epoch")             # → (-10000.0, -2070.0)
+
+# Year → matching polities (multiple are normal — 三国, 隋末, etc.)
+[m.dynasty_id for m in get_cultural_periods_from_year(250)]
+# → ['三国', '吴', '蜀', '魏']
+
+# BP convention (radiocarbon, 1950 reference)
+get_age_from_cultural_period("商", level="dynasty", anno_domini=False)
+# → (3509.0, 3073.0)
+
+# Foreign aliases
+get_age_from_cultural_period(
+    "Neolithic", level="epoch",
+    aliases={"新石器": {"Neolithic", "Neo"}},
+)
+# → (-10000.0, -2070.0)
+```
+
+## 🏗️ Architecture at a glance
+
+```
+data.library.sh.cn  ─►  scrape  ─►  validate  ─►  clean  ─►  dynasty_clean.csv (854)
+                                                              dynasty_drops.md   (audit)
+                                                                       │
+                                                                       ▼
+                                                       src/core/dynasties.py
+                                                       (runtime API, two functions)
+```
+
+| Stage | Script | Output |
+|---|---|---|
+| scrape | `scripts/dynasties/scrape_dynasty.py` | `dynasty_temporal.csv` (879 rows) |
+| validate | `scripts/dynasties/validate_dynasties.py` | `dynasty_issues.csv` (189 flagged) |
+| clean | `scripts/dynasties/clean_dynasties.py` | `dynasty_clean.csv` + `dynasty_drops.md` |
+
+The runtime API only reads `dynasty_clean.csv`. To change a cleaning rule, edit the script and re-run — the diff in `dynasty_clean.csv` and `dynasty_drops.md` makes the change reviewable.
+
+## 📚 Documentation
+
+| | |
+|---|---|
+| 📖 **[Quick Start](docs/doc/quick-start.md)** | Install + first lookup, 5 minutes |
+| 🧹 **[Data Pipeline](docs/doc/data-pipeline.md)** | Scrape → validate → clean explained |
+| 📚 **[API Reference](docs/doc/api-reference.md)** | Every parameter, with worked examples |
+| 🗺️ **[Epochs Reference](docs/doc/epochs.md)** | `EPOCH_MAP` + `PREHISTORIC_EPOCHS` |
+
+Build the site locally:
 
 ```bash
-# Run tests
-make test
-
-# View test report
-make report
-
-# Run pre-commit checks
-pre-commit run --all-files
+make docs       # serve at http://127.0.0.1:8000
+make docs-build # static build
 ```
 
-## Project Structure
-
-```shell
-.
-├── src/                    # Source code
-│   ├── api/                # API layer
-│   ├── core/               # Core logic
-│   └── __init__.py
-├── tests/                  # Tests
-│   ├── conftest.py         # pytest config
-│   └── helper.py           # test helpers
-├── config/                 # Configuration
-│   └── config.yaml         # Main config
-├── data/                   # Data assets
-├── docs/                   # Documentation
-├── examples/               # Examples
-├── scripts/                # Utility scripts
-│   └── configure_project.py
-├── pyproject.toml          # Project config (uv/poetry)
-├── tox.ini                 # Multi-Python testing
-├── makefile                # Make shortcuts
-└── README.md               # This file
-```
-
-## Features
-
-1. Makefile automation
-2. Hydra-friendly config management
-3. pytest unit tests
-4. allure reports
-5. nbstripout for notebooks (keep outputs)
-6. pre-commit for linting
-7. mkdocs for docs
-8. uv package manager (poetry compatible)
-9. interrogate doc coverage
-10. Jupyter for analysis
-11. snakeviz profiling
-12. isort imports
-13. flake8 linting
-14. ruff linting
-15. black formatting
-16. mypy type checking
-17. coverage reports
-18. tox for Python 3.10-3.13 matrix
-19. release-please versioning
-20. mkdocs-material theme
-
-## Common Commands
-
-### Dev workflow
+## 🧪 Development
 
 ```bash
-# Install all deps (auto-detect uv or poetry)
-make setup
-
-# Run tests
-make test
-
-# Matrix tests (Python 3.10-3.13)
-make tox
-
-# Test report
-make report
-
-# Configure project metadata
-make configure-project
-
-# Serve docs
-make docs
+make test                       # pytest
+pre-commit run --all-files      # black + ruff + flake8 + mypy + interrogate
+make tox                        # Python 3.10–3.13 matrix
 ```
 
-**Note:** The Makefile auto-detects uv first, then poetry. If neither is installed, it prints install hints.
+The test file `tests/test_dynasties.py` is the executable spec — 103 cases organized into one class per behavior cluster, each with a docstring explaining what it pins.
 
-### Using uv (recommended)
+## 📄 Data attribution
 
-```bash
-# Install deps
-uv sync --all-extras
+Source: [上海图书馆开放数据平台 (data.library.sh.cn)](https://data.library.sh.cn/dynasty/). All cleaning decisions are documented in [`data/dynasties/dynasty_drops.md`](data/dynasties/dynasty_drops.md) with a clickable URI back to the source for each modified row.
 
-# Run tests
-uv run pytest
+## 🤝 Contributing
 
-# Run any Python command
-uv run python your_script.py
+PRs welcome. Please:
 
-# Add a dependency
-uv add package-name
+1. Run `pre-commit run --all-files` and `make test` (must pass).
+2. If you change cleaning rules, regenerate `dynasty_clean.csv` and `dynasty_drops.md` and commit both — the diff is your change's audit trail.
+3. New behavior → new test in `tests/test_dynasties.py` with a docstring describing what it pins.
 
-# Add a dev dependency
-uv add --dev package-name
-```
+## 📜 License
 
-### Using poetry (alternative)
+MIT — see [LICENSE](LICENSE).
 
-```bash
-# Install deps
-poetry install
+## 👤 Author
 
-# Run tests
-poetry run pytest
-
-# Add a dependency
-poetry add package-name
-```
-
-### Code quality
-
-```bash
-# Install pre-commit hooks
-pre-commit install
-
-# Run all checks
-pre-commit run --all-files
-
-# Run specific checks
-pre-commit run flake8 --all-files
-pre-commit run black --all-files
-pre-commit run interrogate --all-files  # doc coverage
-```
-
-### Multi-Python testing
-
-```bash
-# All versions (via Makefile)
-make tox
-
-# Specific version
-make tox-e pyversion=py311
-
-# List envs
-make tox-list
-
-# Direct tox
-tox                  # all versions
-tox -e py311         # Python 3.11
-tox list             # show envs
-tox -p               # parallel
-```
-
-## Documentation
-
-!!! info "Online docs"
-    Visit [Online Docs](https://songshgeo.github.io/project_template/) for the full site.
-
-### View docs locally
-
-```bash
-# Dev server with live reload
-make docs
-
-# Or run directly
-uv run mkdocs serve
-poetry run mkdocs serve  # via poetry
-```
-
-Open `http://127.0.0.1:8000`.
-
-### Build docs
-
-```bash
-make docs-build
-# or
-uv run mkdocs build
-```
-
-### Deploy docs to GitHub Pages
-
-Docs are deployed by GitHub Actions:
-
-1. Push to `main`
-2. Actions build automatically
-3. Pages deploy
-
-**URL:** `https://songshgeo.github.io/project_template/`
-
-### Doc sections
-
-- 📖 [Quick Start](docs/en/doc/quick-start.md) - step-by-step tutorial
-- 🔧 [Tooling](docs/en/doc/tools.md) - usage and best practices
-- ⚙️ [Configuration](docs/en/doc/configuration.md) - config walkthrough
-- 📝 [Development](docs/en/doc/development.md) - coding standards
-- 🚀 [Deployment](docs/en/doc/deployment.md) - release process
-
-## FAQ
-
-### Q: uv or poetry?
-A: uv is faster and modern; poetry is mature. Choose based on preference.
-
-### Q: How to start a new project?
-A: Run `make setup` to configure and install deps.
-
-### Q: How to add dependencies?
-
-```bash
-uv add package-name          # runtime deps
-uv add --dev package-name    # dev deps
-```
-
-### Q: How to run tests?
-
-```bash
-make test        # via Make
-uv run pytest    # direct
-```
-
-## Contributing
-
-Contributions welcome! Steps:
-
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit (`git commit -m 'feat: add amazing feature'`)
-4. Push (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please ensure:
-- All linters pass
-- Tests are added/updated
-- Docs are updated
-- Follow coding guidelines
-
-## License
-
-MIT License. See [LICENSE](LICENSE).
-
-## Author
-
-- **SongshGeo** - [GitHub](https://github.com/SongshGeo) - [Website](https://cv.songshgeo.com/)
+**SongshGeo** · [GitHub](https://github.com/SongshGeo) · [Website](https://cv.songshgeo.com/)

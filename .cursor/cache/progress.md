@@ -8,4 +8,31 @@ Audience:
 Usage:
 - Keep entries brief and actionable; remove outdated notes once resolved.
 -->
-# progress
+# Progress
+
+## Done
+
+- **Pipeline**: scrape → validate → clean. `clean_dynasties.py` produces `dynasty_clean.csv` (854 rows) and `dynasty_drops.md` (per-row audit). Every modification emits `RawDataModifiedWarning`.
+- **Runtime API** in `src/core/dynasties.py`:
+  - `get_age_from_cultural_period(cp, level, anno_domini, time_table, aliases)` — name → `(begin, end)`. Levels: `period` / `dynasty` / `epoch`. BP conversion via `anno_domini=False`. Custom timetable via `time_table`. Foreign-name aliases via `aliases`.
+  - `get_cultural_periods_from_year(year, anno_domini, time_table)` — year → `list[CulturalPeriodMatch]` (sorted by `(beginYear, endYear)`).
+  - `EPOCH_MAP` (汉/晋/三国/宋/五代/南北朝/上古) and `PREHISTORIC_EPOCHS` (旧石器/新石器).
+- **Tests**: 103 passing in `tests/test_dynasties.py` (one `Test*` class per behavior cluster, parametrized cases with explicit `ids`).
+- **Docstring coverage**: 100% on `src/core/dynasties.py` (interrogate ≥ 80% gate passing).
+- **Docs**: bilingual user docs under `docs/{en,zh}/`; root `README.md` + `README.zh.md` rewritten as project intro.
+
+## Open questions / next steps
+
+- **Dynasty-level disambiguation by `dynasty_id`**: currently `level="dynasty"` for `"夏"` returns the union span `(-1989, 623)`. The escape hatch is `level="epoch"` with `"上古"`, but a more direct API would be welcome. *(Pinned by a test; change deliberately.)*
+- **5th E-row**: 南诏上元 (`784~?`) is intentionally left as NaN; should be filled if a documented end is found, otherwise stays as the function's NaN-end test fixture.
+- **`pandas` is not declared in `pyproject.toml` dependencies** — works locally because the dev env carries it. Add to `[project.dependencies]` before any release.
+
+## Recent files touched
+
+- `scripts/dynasties/clean_dynasties.py` (new)
+- `data/dynasties/{dynasty_clean.csv, dynasty_drops.md, readme.md}` (new / rewritten)
+- `src/core/dynasties.py` (substantial)
+- `tests/test_dynasties.py` (new, 103 cases)
+- `docs/index{,.zh}.md`, `docs/doc/*{,.zh}.md` (rewritten + reorganized for `mkdocs-static-i18n`)
+- `mkdocs.yml` (single config; `mkdocs.en.yml` / `mkdocs.zh.yml` deleted in favor of i18n plugin)
+- Root `README.md`, `README.zh.md` (rewritten)

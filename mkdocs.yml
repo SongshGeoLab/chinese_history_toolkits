@@ -1,26 +1,29 @@
-site_name: Python Project Template
-site_description: A modern Python project template
+site_name: Chinese History Toolkits
+site_description: Bidirectional Chinese-history time mapping with a transparent cleaning pipeline
 site_author: SongshGeo
-site_url: https://songshgeo.github.io/project_template/
-docs_dir: docs/en
+site_url: https://songshgeo.github.io/chinese_history_toolkits/
+docs_dir: docs
 site_dir: site
 
-repo_name: SongshGeo/project_template
-repo_url: https://github.com/SongshGeo/project_template
-edit_uri: edit/main/docs/en/
+repo_name: SongshGeo/chinese_history_toolkits
+repo_url: https://github.com/SongshGeo/chinese_history_toolkits
+edit_uri: edit/main/docs/
 
 copyright: Copyright &copy; 2024 SongshGeo
 
+# Note: nav entries reference the *default-language* filenames (no suffix).
+# The mkdocs-static-i18n plugin automatically resolves the per-language
+# variant (e.g. `index.zh.md`) when building each language's site.
 nav:
   - Home: index.md
   - Quick Start: doc/quick-start.md
-  - Tooling: doc/tools.md
-  - Configuration: doc/configuration.md
-  - Development: doc/development.md
-  - Deployment: doc/deployment.md
+  - Data Pipeline: doc/data-pipeline.md
+  - API Reference: doc/api-reference.md
+  - Epochs Reference: doc/epochs.md
 
 theme:
   name: material
+  language: en
   palette:
     - scheme: default
       primary: blue
@@ -68,15 +71,33 @@ markdown_extensions:
 
 plugins:
   - search
+  # mkdocs-static-i18n drives a real language switcher: one build, two
+  # locales served at / (en, default) and /zh/ (zh). Per-page localized
+  # files are picked up by suffix (`index.zh.md`, `doc/quick-start.zh.md`,
+  # ...). When a translation is missing for a page, the plugin falls back
+  # to the default-language version (config below).
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh
+          name: 中文
+          build: true
+          site_name: 中国历史工具集
+          nav_translations:
+            Home: 主页
+            Quick Start: 快速开始
+            Data Pipeline: 数据流水线
+            API Reference: API 参考
+            Epochs Reference: 历史时期参考
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/SongshGeo/project_template
-  alternate:
-    - name: English
-      link: /project_template/
-      lang: en
-    - name: 中文
-      link: /project_template/zh/
-      lang: zh
+      link: https://github.com/SongshGeo/chinese_history_toolkits

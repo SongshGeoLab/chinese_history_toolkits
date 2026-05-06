@@ -1,303 +1,128 @@
-# Python 项目模板
+<div align="center">
 
-[中文](README.zh.md) | [English](README.md)
+# 🏛️ 中国历史工具集
 
-一个现代化的 Python 项目模板，集成了最佳实践和完整的开发工具链。
+**把任意年份对应到中国朝代 / 年号 / 历史时期, 反向亦可。**
 
-## 快速开始
+[中文](README.zh.md) · [English](README.md) · [在线文档](https://songshgeo.github.io/chinese_history_toolkits/zh/)
 
-### 1. 安装 uv（推荐）或 poetry
+[![Python](https://img.shields.io/badge/Python-3.10%E2%80%933.13-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-purple)](https://songshgeo.github.io/chinese_history_toolkits/zh/)
+[![Tests](https://img.shields.io/badge/tests-103%20passing-brightgreen)]()
+[![Doc coverage](https://img.shields.io/badge/docstrings-100%25-brightgreen)]()
 
-```bash
-# 安装 uv（推荐，更快）
-curl -LsSf https://astral.sh/uv/install.sh | sh
+</div>
 
-# 或安装 poetry
-pip install poetry
-```
+---
 
-### 2. 创建新项目
+基于[上海图书馆开放数据平台](https://data.library.sh.cn/dynasty/)（879 条原始记录）构建, 数据清洗过程透明可审计 —— 每一处改动都能追溯到上图原始 URI。轻量、强类型 Python API。
 
-```bash
-# 克隆此模板
-git clone https://github.com/SongshGeo/project_template.git my-project
-cd my-project
+## ✨ 特性
 
-# 初始化项目（配置项目名称和描述）
-make setup
+- 🔁 **双向查询** —— 名称 → 起止年份; 年份 → 多个并行政权列表。
+- 🪨 **完整时间线** —— 旧石器 / 新石器 史前段一直到清。
+- 🧹 **数据已清洗** —— 丢弃 F1 截断重复、合并 F2 拆分跨度、手工补全缺失年份、消歧上古朝代名（`夏(窦建德)` ≠ `夏`）。
+- 📜 **可审计** —— [`dynasty_drops.md`](data/dynasties/dynasty_drops.md) 里每一条改动都附上图 URI 链接; 清洗时每改一行抛一条 `RawDataModifiedWarning`。
+- 🌐 **支持别名** —— 传入 `aliases={"新石器": {"Neolithic", "Neo"}}` 即可识别外文输入。
+- ⚡ **轻量** —— 运行时仅依赖 `pandas`; 数据已在仓库中, 不需要联网。
 
-# 手动配置项目（可选，如果 make setup 没有运行）
-# 使用 Makefile（推荐，会自动选择包管理器）
-make configure-project
-
-# 或直接运行（需要先安装依赖）
-python scripts/configure_project.py
-```
-
-**配置脚本功能：**
-- 更新 `pyproject.toml` 中的 `[project]` 和 `[tool.poetry]` 段
-- 更新 GitHub workflow 配置
-- 创建/更新 `README.md`
-- 清空 `CHANGELOG.md`
-
-**脚本会提示您输入：**
-- **项目名称**：将在包名和配置中使用
-- **项目描述**：项目的简要描述
-
-### 手动安装依赖（可选）
-
-如果只想安装依赖而不配置项目：
+## 🚀 快速开始
 
 ```bash
-uv sync --all-extras  # 使用 uv
-# 或
-poetry install        # 使用 poetry
+git clone https://github.com/SongshGeo/chinese_history_toolkits.git
+cd chinese_history_toolkits
+uv sync --all-extras   # 或: pip install pandas
 ```
 
-### 3. 开发
+```python
+from src.core.dynasties import (
+    get_age_from_cultural_period,
+    get_cultural_periods_from_year,
+)
+
+# 名称 → 年份
+get_age_from_cultural_period("康熙")                              # → (1662.0, 1722.0)
+get_age_from_cultural_period("唐", level="dynasty")               # → (618.0, 907.0)
+get_age_from_cultural_period("新石器", level="epoch")             # → (-10000.0, -2070.0)
+
+# 年份 → 所有匹配政权（多个匹配是常态 —— 三国、隋末等）
+[m.dynasty_id for m in get_cultural_periods_from_year(250)]
+# → ['三国', '吴', '蜀', '魏']
+
+# BP 纪年（碳十四惯例, 1950 为参考点）
+get_age_from_cultural_period("商", level="dynasty", anno_domini=False)
+# → (3509.0, 3073.0)
+
+# 外文别名
+get_age_from_cultural_period(
+    "Neolithic", level="epoch",
+    aliases={"新石器": {"Neolithic", "Neo"}},
+)
+# → (-10000.0, -2070.0)
+```
+
+## 🏗️ 架构一览
+
+```
+data.library.sh.cn  ─►  scrape  ─►  validate  ─►  clean  ─►  dynasty_clean.csv (854)
+                                                              dynasty_drops.md   (审计)
+                                                                       │
+                                                                       ▼
+                                                       src/core/dynasties.py
+                                                       (运行时 API, 两个函数)
+```
+
+| 阶段 | 脚本 | 产出 |
+|---|---|---|
+| scrape | `scripts/dynasties/scrape_dynasty.py` | `dynasty_temporal.csv`（879 行） |
+| validate | `scripts/dynasties/validate_dynasties.py` | `dynasty_issues.csv`（189 条标记） |
+| clean | `scripts/dynasties/clean_dynasties.py` | `dynasty_clean.csv` + `dynasty_drops.md` |
+
+运行时 API 只读 `dynasty_clean.csv`。要改清洗规则, 改脚本、重跑、把 `dynasty_clean.csv` 和 `dynasty_drops.md` 一起提交, diff 就是改动的可审查记录。
+
+## 📚 文档
+
+| | |
+|---|---|
+| 📖 **[快速开始](docs/doc/quick-start.zh.md)** | 安装 + 第一次查询, 五分钟 |
+| 🧹 **[数据流水线](docs/doc/data-pipeline.zh.md)** | scrape → validate → clean 详解 |
+| 📚 **[API 参考](docs/doc/api-reference.zh.md)** | 每一个参数, 配实例 |
+| 🗺️ **[历史时期参考表](docs/doc/epochs.zh.md)** | `EPOCH_MAP` + `PREHISTORIC_EPOCHS` |
+
+本地构建文档:
 
 ```bash
-# 运行测试
-make test
-
-# 查看测试报告
-make report
-
-# 运行 pre-commit 检查
-pre-commit run --all-files
+make docs       # http://127.0.0.1:8000 实时预览
+make docs-build # 静态构建
 ```
 
-## 项目结构
-
-```shell
-.
-├── src/                    # 源代码目录
-│   ├── api/                # API 相关
-│   ├── core/               # 核心功能
-│   └── __init__.py
-├── tests/                  # 测试目录
-│   ├── conftest.py        # pytest 配置
-│   └── helper.py          # 测试辅助函数
-├── config/                 # 配置文件目录
-│   └── config.yaml        # 主配置文件
-├── data/                   # 数据目录
-├── docs/                   # 文档目录
-├── examples/               # 示例代码
-├── scripts/                # 工具脚本
-│   └── configure_project.py
-├── pyproject.toml          # 项目配置（uv/poetry/pyproject）
-├── tox.ini                 # 多版本 Python 测试配置
-├── makefile                # Make 命令快捷方式
-└── README.md               # 本文件
-```
-
-## 特性
-
-1. 使用 `Makefile` 进行批量操作
-2. 使用 `Hydra` 管理模型参数与配置
-3. 使用 `pytest` 进行单元测试
-4. 使用 `allure` 生成测试报告
-5. 使用 `nbstripout` 管理 Jupyter Notebook 输出（保留 notebook 输出）
-6. 使用 `pre-commit` 进行代码检查
-7. 使用 `mkdocs` 生成文档
-8. 使用 `uv` 进行包管理（兼容 `poetry`）
-9. 使用 `interrogate` 检查文档覆盖率
-10. 使用 `jupyter` 进行数据分析
-11. 使用 `snakeviz` 进行性能分析
-12. 使用 `isort` 进行代码格式化
-13. 使用 `flake8` 进行代码检查
-14. 使用 `ruff` 进行文档检查
-15. 使用 `black` 进行代码格式化
-16. 使用 `mypy` 进行类型检查
-17. 使用 `coverage` 进行测试覆盖率分析
-18. 使用 `tox` 进行多 Python 版本（3.10-3.13）兼容性测试
-19. 使用 `release-please` 进行版本管理
-20. 使用 `mkdocs-material` 生成美观的文档
-
-## 常见命令
-
-### 开发工作流
+## 🧪 开发
 
 ```bash
-# 安装所有依赖（自动检测并使用 uv 或 poetry）
-make setup
-
-# 运行测试（自动适配包管理器）
-make test
-
-# 运行多版本测试（Python 3.10-3.13）
-make tox
-
-# 生成测试报告
-make report
-
-# 配置项目（修改项目名称、描述等）
-make configure-project
-
-# 查看文档
-make docs
+make test                       # pytest
+pre-commit run --all-files      # black + ruff + flake8 + mypy + interrogate
+make tox                        # Python 3.10–3.13 矩阵
 ```
 
-**注意：** Makefile 会自动检测系统中安装的包管理器（uv 或 poetry），优先使用 uv。如果两者都未安装，会提示错误并告知安装方法。
+`tests/test_dynasties.py` 是行为可执行规约 —— 103 个用例, 一个行为族一个 class, 每个用例有 docstring 说明它 pin 什么。
 
-### 使用 uv（推荐）
+## 📄 数据来源
 
-```bash
-# 安装依赖
-uv sync --all-extras
+来源: [上海图书馆开放数据平台 (data.library.sh.cn)](https://data.library.sh.cn/dynasty/)。所有清洗决定记录在 [`data/dynasties/dynasty_drops.md`](data/dynasties/dynasty_drops.md), 每条改动带可点击的源 URI。
 
-# 运行测试
-uv run pytest
+## 🤝 贡献
 
-# 运行任意 Python 命令
-uv run python your_script.py
+欢迎 PR。请确保:
 
-# 添加新依赖
-uv add package-name
+1. `pre-commit run --all-files` 与 `make test` 都通过。
+2. 如果改了清洗规则, 重新生成 `dynasty_clean.csv` 与 `dynasty_drops.md` 并一同提交 —— diff 就是审计记录。
+3. 新行为对应新测试用例, 在 `tests/test_dynasties.py` 中添加, 用 docstring 说明它 pin 什么。
 
-# 添加开发依赖
-uv add --dev package-name
-```
+## 📜 License
 
-### 使用 poetry（备选）
+MIT —— 见 [LICENSE](LICENSE)。
 
-```bash
-# 安装依赖
-poetry install
+## 👤 作者
 
-# 运行测试
-poetry run pytest
-
-# 添加新依赖
-poetry add package-name
-```
-
-### 代码质量
-
-```bash
-# 安装 pre-commit hooks
-pre-commit install
-
-# 手动运行所有检查
-pre-commit run --all-files
-
-# 运行特定检查
-pre-commit run flake8 --all-files
-pre-commit run black --all-files
-pre-commit run interrogate --all-files  # 检查文档覆盖率
-```
-
-### 多 Python 版本测试
-
-```bash
-# 测试所有 Python 版本（使用 Makefile）
-make tox
-
-# 测试特定版本
-make tox-e pyversion=py311
-
-# 查看可用环境
-make tox-list
-
-# 直接使用 tox 命令
-tox                  # 测试所有版本
-tox -e py311         # 测试 Python 3.11
-tox list              # 查看环境列表
-tox -p                # 并行运行
-```
-
-## 文档
-
-!!! info "在线文档"
-    访问 [在线文档网站](https://songshgeo.github.io/project_template/) 查看完整的文档和教程。
-
-### 本地查看文档
-
-```bash
-# 启动文档服务器（开发模式，支持热重载）
-make docs
-
-# 或手动运行
-uv run mkdocs serve
-poetry run mkdocs serve  # 使用 poetry
-```
-
-访问 `http://127.0.0.1:8000` 查看文档。
-
-### 构建文档
-
-```bash
-# 构建静态文档站点
-make docs-build
-
-# 或手动运行
-uv run mkdocs build
-```
-
-### 部署文档到 GitHub Pages
-
-文档通过 GitHub Actions 自动部署：
-
-1. 推送代码到 `main` 分支
-2. GitHub Actions 自动触发构建
-3. 文档部署到 GitHub Pages
-
-**访问地址：** `https://songshgeo.github.io/project_template/`
-
-### 文档章节
-
-- 📖 [快速开始指南](docs/zh/doc/quick-start.md) - 从零开始的详细教程
-- 🔧 [工具链说明](docs/zh/doc/tools.md) - 各工具的使用说明和最佳实践
-- ⚙️ [配置说明](docs/zh/doc/configuration.md) - 项目配置文件详解
-- 📝 [开发规范](docs/zh/doc/development.md) - 代码规范和最佳实践
-- 🚀 [部署指南](docs/zh/doc/deployment.md) - 项目部署和发布流程
-
-## 常见问题
-
-### Q: 如何选择 uv 还是 poetry？
-
-**A:** uv 更快、更现代，推荐使用。Poetry 更成熟，可根据项目需求选择。
-
-### Q: 如何开始一个新项目？
-
-**A:** 运行 `make setup` 即可完成配置和依赖安装。
-
-### Q: 如何添加新依赖？
-
-**A:**
-```bash
-uv add package-name          # 运行时依赖
-uv add --dev package-name    # 开发依赖
-```
-
-### Q: 如何运行测试？
-
-**A:**
-```bash
-make test        # 使用 Make
-uv run pytest    # 直接运行
-```
-
-## 贡献指南
-
-欢迎贡献代码！请遵循以下步骤：
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'feat: Add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建 Pull Request
-
-请确保：
-- 代码通过所有 linter 检查
-- 添加适当的测试
-- 更新相关文档
-- 遵循代码规范
-
-## 许可证
-
-本项目使用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
-
-## 作者
-
-- **SongshGeo** - [GitHub](https://github.com/SongshGeo) - [Website](https://cv.songshgeo.com/)
+**SongshGeo** · [GitHub](https://github.com/SongshGeo) · [个人主页](https://cv.songshgeo.com/)

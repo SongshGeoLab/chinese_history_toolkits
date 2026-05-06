@@ -47,6 +47,7 @@ docs = [
     "mkdocs-glightbox>=0.3.2",
     "mkdocs-ezlinks-plugin>=0.1.14",
     "mkdocs-exclude>=1.0.2",
+    "mkdocs-static-i18n>=1.2",
 ]
 
 [tool.poetry]
@@ -96,6 +97,7 @@ mkdocs-callouts = ">=1.9.0"
 mkdocs-glightbox = ">=0.3.2"
 mkdocs-ezlinks-plugin = ">=0.1.14"
 mkdocs-exclude = ">=1.0.2"
+mkdocs-static-i18n = ">=1.2"
 
 [build-system]
 requires = ["poetry-core"]
