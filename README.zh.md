@@ -4,11 +4,11 @@
 
 **把任意年份对应到中国朝代 / 年号 / 历史时期, 反向亦可。**
 
-[中文](README.zh.md) · [English](README.md) · [在线文档](https://songshgeo.github.io/chinese_history_toolkits/zh/)
+[中文](README.zh.md) · [English](README.md) · [在线文档](https://songshgeolab.github.io/chinese_history_toolkits/zh/)
 
 [![Python](https://img.shields.io/badge/Python-3.10%E2%80%933.13-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Docs](https://img.shields.io/badge/docs-mkdocs--material-purple)](https://songshgeo.github.io/chinese_history_toolkits/zh/)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-purple)](https://songshgeolab.github.io/chinese_history_toolkits/zh/)
 [![Tests](https://img.shields.io/badge/tests-103%20passing-brightgreen)]()
 [![Doc coverage](https://img.shields.io/badge/docstrings-100%25-brightgreen)]()
 
@@ -30,32 +30,35 @@
 ## 🚀 快速开始
 
 ```bash
-git clone https://github.com/SongshGeo/chinese_history_toolkits.git
+# 从 PyPI 安装 —— 发布包名是 `chinese_history_toolkits`
+pip install chinese_history_toolkits
+
+# 或从源码
+git clone https://github.com/SongshGeoLab/chinese_history_toolkits.git
 cd chinese_history_toolkits
-uv sync --all-extras   # 或: pip install pandas
+uv sync --all-extras
 ```
 
+> **注意** —— PyPI 发布名是 `chinese_history_toolkits`（比较啰嗦）, 但**导入名是短缩写 `chhiskit`**, 日常使用更顺手。
+
 ```python
-from src.core.dynasties import (
-    get_age_from_cultural_period,
-    get_cultural_periods_from_year,
-)
+import chhiskit
 
 # 名称 → 年份
-get_age_from_cultural_period("康熙")                              # → (1662.0, 1722.0)
-get_age_from_cultural_period("唐", level="dynasty")               # → (618.0, 907.0)
-get_age_from_cultural_period("新石器", level="epoch")             # → (-10000.0, -2070.0)
+chhiskit.get_age_from_cultural_period("康熙")                              # → (1662.0, 1722.0)
+chhiskit.get_age_from_cultural_period("唐", level="dynasty")               # → (618.0, 907.0)
+chhiskit.get_age_from_cultural_period("新石器", level="epoch")             # → (-10000.0, -2070.0)
 
 # 年份 → 所有匹配政权（多个匹配是常态 —— 三国、隋末等）
-[m.dynasty_id for m in get_cultural_periods_from_year(250)]
+[m.dynasty_id for m in chhiskit.get_cultural_periods_from_year(250)]
 # → ['三国', '吴', '蜀', '魏']
 
 # BP 纪年（碳十四惯例, 1950 为参考点）
-get_age_from_cultural_period("商", level="dynasty", anno_domini=False)
+chhiskit.get_age_from_cultural_period("商", level="dynasty", anno_domini=False)
 # → (3509.0, 3073.0)
 
 # 外文别名
-get_age_from_cultural_period(
+chhiskit.get_age_from_cultural_period(
     "Neolithic", level="epoch",
     aliases={"新石器": {"Neolithic", "Neo"}},
 )
@@ -69,7 +72,7 @@ data.library.sh.cn  ─►  scrape  ─►  validate  ─►  clean  ─►  dyn
                                                               dynasty_drops.md   (审计)
                                                                        │
                                                                        ▼
-                                                       src/core/dynasties.py
+                                                       src/chhiskit/core/dynasties.py
                                                        (运行时 API, 两个函数)
 ```
 

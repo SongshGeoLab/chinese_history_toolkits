@@ -16,7 +16,7 @@ Usage:
 
 ## Domain entity (post-clean)
 
-`dynasty_clean.csv` is the canonical table; the runtime API reads it through `src/core/dynasties.py`.
+`dynasty_clean.csv` is the canonical table; the runtime API reads it through `src/chhiskit/core/dynasties.py`.
 
 | Column | Type | Meaning |
 |---|---|---|

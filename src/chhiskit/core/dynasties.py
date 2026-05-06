@@ -24,8 +24,12 @@ from typing import Literal, NamedTuple
 
 import pandas as pd
 
+# Bundled inside the installed package so pip-installed users get the data
+# without external paths. `__file__` resolves to
+# .../chhiskit/core/dynasties.py in both editable installs and wheels;
+# `.parent.parent` is the package root (`.../chhiskit/`).
 _DEFAULT_TABLE_PATH = (
-    Path(__file__).resolve().parents[2] / "data" / "dynasties" / "dynasty_clean.csv"
+    Path(__file__).resolve().parent.parent / "data" / "dynasties" / "dynasty_clean.csv"
 )
 _BP_REFERENCE = 1950
 

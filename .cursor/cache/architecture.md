@@ -35,7 +35,7 @@ data.library.sh.cn  (上海图书馆开放数据平台)
    data/dynasties/dynasty_clean.csv       (854 rows; downstream-authoritative)
    data/dynasties/dynasty_drops.md        (per-row audit with 上图 URI links)
         │
-        ▼  src/core/dynasties.py  (runtime, reads only dynasty_clean.csv)
+        ▼  src/chhiskit/core/dynasties.py  (runtime, reads only dynasty_clean.csv)
         │
    get_age_from_cultural_period(cp, level, anno_domini, time_table, aliases)
    get_cultural_periods_from_year(year, anno_domini, time_table)
@@ -46,7 +46,7 @@ data.library.sh.cn  (上海图书馆开放数据平台)
 | Module | Owns | Does NOT own |
 |---|---|---|
 | `scripts/dynasties/` | Build-time: HTTP, validation, cleaning, audit-doc generation | Runtime queries |
-| `src/core/dynasties.py` | Runtime API. Reads `dynasty_clean.csv` only | Cleaning rules, validation logic |
+| `src/chhiskit/core/dynasties.py` | Runtime API. Reads `dynasty_clean.csv` only | Cleaning rules, validation logic |
 | `data/dynasties/` | Versioned artifacts (raw + clean + audit) | Logic |
 | `tests/test_dynasties.py` | API behavior contracts pinned to `dynasty_clean.csv` | Pipeline-stage tests |
 

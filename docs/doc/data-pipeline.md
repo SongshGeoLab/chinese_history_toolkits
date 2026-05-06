@@ -95,4 +95,4 @@ assert len(wlist) == 34, f"unexpected modifications: {len(wlist)}"
 
 ## What the runtime trusts
 
-The runtime API in `src/core/dynasties.py` reads **only** `dynasty_clean.csv`. It never re-validates or re-cleans. This is intentional — to change a rule, change the script and re-run it, then commit both `dynasty_clean.csv` and `dynasty_drops.md`. The diff makes the change reviewable.
+The runtime API in `src/chhiskit/core/dynasties.py` reads **only** `dynasty_clean.csv`. It never re-validates or re-cleans. This is intentional — to change a rule, change the script and re-run it, then commit both `dynasty_clean.csv` and `dynasty_drops.md`. The diff makes the change reviewable.

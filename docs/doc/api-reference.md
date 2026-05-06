@@ -1,6 +1,6 @@
 # API Reference
 
-Two functions, both in `src.core.dynasties`. Both consume `dynasty_clean.csv` by default; pass your own `time_table` to override.
+Two functions, both in `chhiskit.core.dynasties`. Both consume `dynasty_clean.csv` by default; pass your own `time_table` to override.
 
 ---
 
@@ -176,7 +176,7 @@ class CulturalPeriodMatch(NamedTuple):
 ### Examples
 
 ```python
-from src.core.dynasties import get_cultural_periods_from_year as q
+from chhiskit.core.dynasties import get_cultural_periods_from_year as q
 
 # Single dynasty, no era reuse
 [(m.dynasty_id, m.reignTitle) for m in q(1700)]

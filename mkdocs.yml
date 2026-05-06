@@ -1,12 +1,12 @@
 site_name: Chinese History Toolkits
 site_description: Bidirectional Chinese-history time mapping with a transparent cleaning pipeline
 site_author: SongshGeo
-site_url: https://songshgeo.github.io/chinese_history_toolkits/
+site_url: https://songshgeolab.github.io/chinese_history_toolkits/
 docs_dir: docs
 site_dir: site
 
-repo_name: SongshGeo/chinese_history_toolkits
-repo_url: https://github.com/SongshGeo/chinese_history_toolkits
+repo_name: SongshGeoLab/chinese_history_toolkits
+repo_url: https://github.com/SongshGeoLab/chinese_history_toolkits
 edit_uri: edit/main/docs/
 
 copyright: Copyright &copy; 2024 SongshGeo
@@ -100,4 +100,4 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/SongshGeo/chinese_history_toolkits
+      link: https://github.com/SongshGeoLab/chinese_history_toolkits

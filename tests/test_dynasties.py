@@ -17,7 +17,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from src.core.dynasties import (
+from chhiskit.core.dynasties import (
     _BP_REFERENCE,
     EPOCH_MAP,
     PREHISTORIC_EPOCHS,
@@ -606,7 +606,7 @@ class TestErrorPaths:
         invariant — tests don't care WHICH layer drops them, only that
         they're absent from what reaches user queries.
         """
-        from src.core.dynasties import _KNOWN_BAD_URIS
+        from chhiskit.core.dynasties import _KNOWN_BAD_URIS
 
         assert default_table["uri"].isin(_KNOWN_BAD_URIS).sum() == 0
 

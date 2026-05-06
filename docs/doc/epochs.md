@@ -65,7 +65,7 @@ If you need a custom aggregation that's not in `EPOCH_MAP`, the cleanest way is 
 
 ```python
 import pandas as pd
-from src.core.dynasties import _load_default_dynasty_table, get_age_from_cultural_period
+from chhiskit.core.dynasties import _load_default_dynasty_table, get_age_from_cultural_period
 
 df = _load_default_dynasty_table()
 my_slice = df[df["dynasty"].isin(["北魏", "东魏", "西魏"])]
@@ -74,4 +74,4 @@ get_age_from_cultural_period("魏", level="dynasty", time_table=my_slice)
 # → (begin, end) over just the three 魏 polities you scoped
 ```
 
-For prehistoric brackets you want to support permanently, edit `PREHISTORIC_EPOCHS` in `src/core/dynasties.py` and add a test pinning the expected span in `tests/test_dynasties.py::TestPrehistoricEpochs`.
+For prehistoric brackets you want to support permanently, edit `PREHISTORIC_EPOCHS` in `src/chhiskit/core/dynasties.py` and add a test pinning the expected span in `tests/test_dynasties.py::TestPrehistoricEpochs`.

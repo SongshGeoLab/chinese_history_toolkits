@@ -65,7 +65,7 @@ cp = strip(input)
 
 ```python
 import pandas as pd
-from src.core.dynasties import _load_default_dynasty_table, get_age_from_cultural_period
+from chhiskit.core.dynasties import _load_default_dynasty_table, get_age_from_cultural_period
 
 df = _load_default_dynasty_table()
 my_slice = df[df["dynasty"].isin(["北魏", "东魏", "西魏"])]
@@ -74,4 +74,4 @@ get_age_from_cultural_period("魏", level="dynasty", time_table=my_slice)
 # → 仅这三个魏政权的并集
 ```
 
-如果你想永久支持新的史前段, 直接编辑 `src/core/dynasties.py` 中的 `PREHISTORIC_EPOCHS`, 并在 `tests/test_dynasties.py::TestPrehistoricEpochs` 里加一个 pin 期望值的测试。
+如果你想永久支持新的史前段, 直接编辑 `src/chhiskit/core/dynasties.py` 中的 `PREHISTORIC_EPOCHS`, 并在 `tests/test_dynasties.py::TestPrehistoricEpochs` 里加一个 pin 期望值的测试。

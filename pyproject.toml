@@ -1,7 +1,7 @@
 [project]
-name = "songshgeo"
+name = "chinese_history_toolkits"
 version = "0.1.0"
-description = "Template"
+description = "Bidirectional Chinese-history time mapping with a transparent cleaning pipeline (import as `chhiskit`)."
 authors = [
     {name = "SongshGeo", email = "songshgeo@gmail.com"}
 ]
@@ -9,9 +9,16 @@ license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 dependencies = [
+    "pandas>=2.0",
     "typing-extensions>=4.12.2",
     "future-annotations>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/SongshGeoLab/chinese_history_toolkits"
+Documentation = "https://songshgeolab.github.io/chinese_history_toolkits/"
+Source = "https://github.com/SongshGeoLab/chinese_history_toolkits"
+Issues = "https://github.com/SongshGeoLab/chinese_history_toolkits/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -51,16 +58,24 @@ docs = [
 ]
 
 [tool.poetry]
-name = "songshgeo"
-version = "1.2.0"
-description = "Template"
+name = "chinese_history_toolkits"
+version = "0.1.0"
+description = "Bidirectional Chinese-history time mapping with a transparent cleaning pipeline (import as `chhiskit`)."
 authors = ["SongshGeo <songshgeo@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "src"}]
+# Distribution name on PyPI is `chinese_history_toolkits`; the actual import
+# package is `chhiskit` (short acronym for users).
+packages = [{include = "chhiskit", from = "src"}]
+include = [
+    # Bundle the cleaned dataset inside the wheel so pip-installed users
+    # get a working API out of the box (no external data dir needed).
+    "src/chhiskit/data/dynasties/*.csv",
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
+pandas = ">=2.0"
 typing-extensions = ">=4.12.2"
 future-annotations = ">=1.0.0"
 
@@ -102,6 +117,11 @@ mkdocs-static-i18n = ">=1.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+# src layout: put `src/` on sys.path so `import chhiskit` works without
+# requiring `pip install -e .` for every contributor.
+pythonpath = ["src"]
 
 [tool.interrogate]
 ignore-init-module = true

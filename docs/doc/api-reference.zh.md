@@ -1,6 +1,6 @@
 # API 参考
 
-两个函数, 都在 `src.core.dynasties`。默认都消费 `dynasty_clean.csv`; 传 `time_table` 可覆盖。
+两个函数, 都在 `chhiskit.core.dynasties`。默认都消费 `dynasty_clean.csv`; 传 `time_table` 可覆盖。
 
 ---
 
@@ -176,7 +176,7 @@ class CulturalPeriodMatch(NamedTuple):
 ### 实例
 
 ```python
-from src.core.dynasties import get_cultural_periods_from_year as q
+from chhiskit.core.dynasties import get_cultural_periods_from_year as q
 
 # 单一朝代, 年号无重用
 [(m.dynasty_id, m.reignTitle) for m in q(1700)]

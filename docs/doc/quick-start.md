@@ -5,7 +5,7 @@ Your first dynasty lookup in five minutes.
 ## 1. Install
 
 ```bash
-git clone https://github.com/SongshGeo/chinese_history_toolkits.git
+git clone https://github.com/SongshGeoLab/chinese_history_toolkits.git
 cd chinese_history_toolkits
 
 # uv (recommended)
@@ -30,10 +30,10 @@ ls data/dynasties/
 ## 3. Your first lookup
 
 ```python
-from src.core.dynasties import get_age_from_cultural_period
+import chhiskit
 
 # By 年号 (reign era) — the default level
-get_age_from_cultural_period("康熙")
+chhiskit.get_age_from_cultural_period("康熙")
 # → (1662.0, 1722.0)
 ```
 
@@ -43,15 +43,15 @@ The result is `(begin_year, end_year)` in AD/BCE form (BCE is negative).
 
 ```python
 # Reign-era query (single 年号)
-get_age_from_cultural_period("贞观", level="period")
+chhiskit.get_age_from_cultural_period("贞观", level="period")
 # → (627.0, 649.0)
 
 # Dynasty-level query
-get_age_from_cultural_period("唐", level="dynasty")
+chhiskit.get_age_from_cultural_period("唐", level="dynasty")
 # → (618.0, 907.0)
 
 # Meta-epoch query (汉, 三国, 五代, 上古, 新石器, ...)
-get_age_from_cultural_period("三国", level="epoch")
+chhiskit.get_age_from_cultural_period("三国", level="epoch")
 # → (220.0, 280.0)
 ```
 
@@ -61,9 +61,9 @@ get_age_from_cultural_period("三国", level="epoch")
 ## 5. Reverse lookup: what was happening in year X?
 
 ```python
-from src.core.dynasties import get_cultural_periods_from_year
+import chhiskit
 
-matches = get_cultural_periods_from_year(250)
+matches = chhiskit.get_cultural_periods_from_year(250)
 for m in matches:
     print(m.dynasty_id, m.reignTitle, m.beginYear, m.endYear)
 # 三国        220.0  280.0
@@ -83,7 +83,7 @@ ALIASES = {
     "康熙": {"Kangxi"},
 }
 
-get_age_from_cultural_period("Tang", level="dynasty", aliases=ALIASES)
+chhiskit.get_age_from_cultural_period("Tang", level="dynasty", aliases=ALIASES)
 # → (618.0, 907.0)
 ```
 

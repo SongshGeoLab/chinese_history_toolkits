@@ -29,10 +29,15 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+# Inputs (raw + validation outputs) stay in the dev data dir, not shipped.
 RAW_CSV = ROOT / "data" / "dynasties" / "dynasty_temporal.csv"
 ISSUES_CSV = ROOT / "data" / "dynasties" / "dynasty_issues.csv"
-OUT_CSV = ROOT / "data" / "dynasties" / "dynasty_clean.csv"
+# Audit doc stays at the dev data dir for historical/diff continuity.
 OUT_MD = ROOT / "data" / "dynasties" / "dynasty_drops.md"
+# Canonical clean CSV is bundled inside the package so pip-installed users
+# get it. Keep a mirror at data/dynasties/ for dev-tree continuity.
+OUT_CSV = ROOT / "src" / "chhiskit" / "data" / "dynasties" / "dynasty_clean.csv"
+OUT_CSV_DEV_MIRROR = ROOT / "data" / "dynasties" / "dynasty_clean.csv"
 
 SOURCE_HOMEPAGE = "https://data.library.sh.cn/dynasty/"
 ANCIENT_NAMES = {"夏", "商", "周", "西周", "东周", "春秋", "战国"}
@@ -498,6 +503,8 @@ def write_clean(rows: list[dict]) -> None:
         "label",
         "uri",
     ]
+    OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
+    OUT_CSV_DEV_MIRROR.parent.mkdir(parents=True, exist_ok=True)
     with OUT_CSV.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=fieldnames)
         writer.writeheader()
@@ -515,6 +522,10 @@ def write_clean(rows: list[dict]) -> None:
                     "uri": r["uri"],
                 }
             )
+    # Mirror to data/dynasties/ for git-tree continuity / quick local inspection.
+    import shutil
+
+    shutil.copyfile(OUT_CSV, OUT_CSV_DEV_MIRROR)
 
 
 def main() -> None:
@@ -548,6 +559,7 @@ def main() -> None:
         file=sys.stderr,
     )
     print(f"  wrote {OUT_CSV.relative_to(ROOT)}", file=sys.stderr)
+    print(f"  mirrored to {OUT_CSV_DEV_MIRROR.relative_to(ROOT)}", file=sys.stderr)
     print(f"  wrote {OUT_MD.relative_to(ROOT)}", file=sys.stderr)
 
 

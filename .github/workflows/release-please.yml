@@ -22,7 +22,7 @@ jobs:
         id: release
         with:
           release-type: python
-          package-name: ${project_name}
+          package-name: chinese_history_toolkits
 
   # Publish to PyPI
   publish-pypi:

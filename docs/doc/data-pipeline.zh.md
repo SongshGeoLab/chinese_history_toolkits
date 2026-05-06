@@ -94,4 +94,4 @@ assert len(wlist) == 34, f"unexpected modifications: {len(wlist)}"
 
 ## 运行时信任的边界
 
-`src/core/dynasties.py` 里的运行时 API **只**读 `dynasty_clean.csv`, 不在运行时重新校验、重新清洗。这是设计决定 —— 要改规则, 改脚本、重跑、把 `dynasty_clean.csv` 与 `dynasty_drops.md` 一起提交, diff 就成了改动的可审查记录。
+`src/chhiskit/core/dynasties.py` 里的运行时 API **只**读 `dynasty_clean.csv`, 不在运行时重新校验、重新清洗。这是设计决定 —— 要改规则, 改脚本、重跑、把 `dynasty_clean.csv` 与 `dynasty_drops.md` 一起提交, diff 就成了改动的可审查记录。

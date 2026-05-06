@@ -4,11 +4,11 @@
 
 **Map any year to its Chinese dynasty / reign-era / epoch — and back.**
 
-[English](README.md) · [中文](README.zh.md) · [Online Docs](https://songshgeo.github.io/chinese_history_toolkits/)
+[English](README.md) · [中文](README.zh.md) · [Online Docs](https://songshgeolab.github.io/chinese_history_toolkits/)
 
 [![Python](https://img.shields.io/badge/Python-3.10%E2%80%933.13-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Docs](https://img.shields.io/badge/docs-mkdocs--material-purple)](https://songshgeo.github.io/chinese_history_toolkits/)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-purple)](https://songshgeolab.github.io/chinese_history_toolkits/)
 [![Tests](https://img.shields.io/badge/tests-103%20passing-brightgreen)]()
 [![Doc coverage](https://img.shields.io/badge/docstrings-100%25-brightgreen)]()
 
@@ -30,32 +30,35 @@ Built on the [Shanghai Library open data platform](https://data.library.sh.cn/dy
 ## 🚀 Quickstart
 
 ```bash
-git clone https://github.com/SongshGeo/chinese_history_toolkits.git
+# From PyPI — distribution name is `chinese_history_toolkits`
+pip install chinese_history_toolkits
+
+# Or from source
+git clone https://github.com/SongshGeoLab/chinese_history_toolkits.git
 cd chinese_history_toolkits
-uv sync --all-extras   # or: pip install pandas
+uv sync --all-extras
 ```
 
+> **Note** — the PyPI distribution name is `chinese_history_toolkits` (verbose), but the **import name is the short acronym `chhiskit`** for daily use.
+
 ```python
-from src.core.dynasties import (
-    get_age_from_cultural_period,
-    get_cultural_periods_from_year,
-)
+import chhiskit
 
 # Name → years
-get_age_from_cultural_period("康熙")                              # → (1662.0, 1722.0)
-get_age_from_cultural_period("唐", level="dynasty")               # → (618.0, 907.0)
-get_age_from_cultural_period("新石器", level="epoch")             # → (-10000.0, -2070.0)
+chhiskit.get_age_from_cultural_period("康熙")                              # → (1662.0, 1722.0)
+chhiskit.get_age_from_cultural_period("唐", level="dynasty")               # → (618.0, 907.0)
+chhiskit.get_age_from_cultural_period("新石器", level="epoch")             # → (-10000.0, -2070.0)
 
 # Year → matching polities (multiple are normal — 三国, 隋末, etc.)
-[m.dynasty_id for m in get_cultural_periods_from_year(250)]
+[m.dynasty_id for m in chhiskit.get_cultural_periods_from_year(250)]
 # → ['三国', '吴', '蜀', '魏']
 
 # BP convention (radiocarbon, 1950 reference)
-get_age_from_cultural_period("商", level="dynasty", anno_domini=False)
+chhiskit.get_age_from_cultural_period("商", level="dynasty", anno_domini=False)
 # → (3509.0, 3073.0)
 
 # Foreign aliases
-get_age_from_cultural_period(
+chhiskit.get_age_from_cultural_period(
     "Neolithic", level="epoch",
     aliases={"新石器": {"Neolithic", "Neo"}},
 )
@@ -69,7 +72,7 @@ data.library.sh.cn  ─►  scrape  ─►  validate  ─►  clean  ─►  dyn
                                                               dynasty_drops.md   (audit)
                                                                        │
                                                                        ▼
-                                                       src/core/dynasties.py
+                                                       src/chhiskit/core/dynasties.py
                                                        (runtime API, two functions)
 ```
 
