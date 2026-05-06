@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.1.0 (2026-05-06)
+
+
+### Features
+
+* :sparkles: Add initial dynasty data processing scripts and files ([167276c](https://github.com/SongshGeoLab/chinese_history_toolkits/commit/167276cee93fbef53f946573525e67e9aad671c8))
+
 ## [1.5.1](https://github.com/SongshGeo/Python-Project-Template/compare/v1.5.0...v1.5.1) (2026-01-05)
 
 
