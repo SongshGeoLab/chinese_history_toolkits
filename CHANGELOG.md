@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.1](https://github.com/SongshGeoLab/chinese_history_toolkits/compare/v0.1.0...v0.1.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* align package name with PyPI trusted publisher registration ([f2d9e2c](https://github.com/SongshGeoLab/chinese_history_toolkits/commit/f2d9e2c0c5885a25741ad0893f90d309432f1085))
+
 ## 0.1.0 (2026-05-06)
 
 

@@ -1,6 +1,6 @@
 [project]
 name = "chinese_history_toolkits"
-version = "0.1.0"
+version = "0.1.1"
 description = "Bidirectional Chinese-history time mapping with a transparent cleaning pipeline (import as `chhiskit`)."
 authors = [
     {name = "SongshGeo", email = "songshgeo@gmail.com"}
