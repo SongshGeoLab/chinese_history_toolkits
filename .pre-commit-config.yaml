@@ -38,7 +38,8 @@ repos:
   rev: 1.7.0
   hooks:
     - id: interrogate
-      args: [--verbose, --fail-under=80]
+      pass_filenames: false
+      args: [--verbose, --fail-under=80, src]
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: 'v1.18.2'  # Use the sha / tag you want to point at
     hooks:
